@@ -7,6 +7,54 @@
         <member name="T:Pulumi.Automation.Collections.DictionaryContentsComparer`2">
             Compares two dictionaries for equality by content, as F# maps would.
         </member>
+        <member name="T:Pulumi.Automation.Commands.LocalPulumiCommandOptions">
+            <summary>
+            Options to configure a <see cref="T:Pulumi.Automation.Commands.LocalPulumiCommand"/> instance.
+            </summary>
+        </member>
+        <member name="P:Pulumi.Automation.Commands.LocalPulumiCommandOptions.Version">
+            <summary>
+            The version of the Pulumi CLI to install or the minimum version requirement for an existing installation.
+            </summary>
+        </member>
+        <member name="P:Pulumi.Automation.Commands.LocalPulumiCommandOptions.Root">
+            <summary>
+            The directory where to install the Pulumi CLI to or where to find an existing installation.
+            </summary>
+        </member>
+        <member name="P:Pulumi.Automation.Commands.LocalPulumiCommandOptions.SkipVersionCheck">
+            <summary>
+            If true, skips the version validation that checks if an existing Pulumi CLI installation is compatible with the SDK.
+            </summary>
+        </member>
+        <member name="T:Pulumi.Automation.Commands.LocalPulumiCommand">
+            <summary>
+            A <see cref="T:Pulumi.Automation.Commands.PulumiCommand"/> implementation that uses a locally installed Pulumi CLI.
+            </summary>
+        </member>
+        <member name="P:Pulumi.Automation.Commands.LocalPulumiCommand.Version">
+            <inheritdoc/>
+        </member>
+        <member name="M:Pulumi.Automation.Commands.LocalPulumiCommand.CreateAsync(Pulumi.Automation.Commands.LocalPulumiCommandOptions,System.Threading.CancellationToken)">
+            <summary>
+            Creates a new LocalPulumiCommand instance.
+            </summary>
+            <param name="options">Options to configure the LocalPulumiCommand.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Pulumi.Automation.Commands.LocalPulumiCommand.Install(Pulumi.Automation.Commands.LocalPulumiCommandOptions,System.Threading.CancellationToken)">
+            <summary>
+            Installs the Pulumi CLI if it is not already installed and returns a new LocalPulumiCommand instance.
+            </summary>
+            <param name="options">Options to configure the LocalPulumiCommand.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="P:Pulumi.Automation.Commands.PulumiCommand.Version">
+            <summary>
+            The version of the Pulumi CLI that is being used.
+            </summary>
+        </member>
         <member name="T:Pulumi.Automation.DestroyOptions">
             <summary>
             Options controlling the behavior of an <see cref="M:Pulumi.Automation.WorkspaceStack.DestroyAsync(Pulumi.Automation.DestroyOptions,System.Threading.CancellationToken)"/> operation.
@@ -566,6 +614,12 @@
         <member name="M:Pulumi.Automation.LocalWorkspace.PostCommandCallbackAsync(System.String,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
+        <member name="M:Pulumi.Automation.LocalWorkspace.AddEnvironmentsAsync(System.String,System.Collections.Generic.IEnumerable{System.String},System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Pulumi.Automation.LocalWorkspace.RemoveEnvironmentAsync(System.String,System.String,System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
         <member name="M:Pulumi.Automation.LocalWorkspace.GetTagAsync(System.String,System.String,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
@@ -661,6 +715,11 @@
         <member name="P:Pulumi.Automation.LocalWorkspaceOptions.PulumiHome">
             <summary>
             The directory to override for CLI metadata.
+            </summary>
+        </member>
+        <member name="P:Pulumi.Automation.LocalWorkspaceOptions.PulumiCommand">
+            <summary>
+            The Pulumi CLI installation to use.
             </summary>
         </member>
         <member name="P:Pulumi.Automation.LocalWorkspaceOptions.SecretsProvider">
@@ -1442,6 +1501,24 @@
             <param name="stackName">The name of the stack.</param>
             <param name="cancellationToken">A cancellation token.</param>
         </member>
+        <member name="M:Pulumi.Automation.Workspace.AddEnvironmentsAsync(System.String,System.Collections.Generic.IEnumerable{System.String},System.Threading.CancellationToken)">
+            <summary>
+            Adds environments to the end of a stack's import list. Imported environments are merged in order
+            per the ESC merge rules. The list of environments behaves as if it were the import list in an anonymous
+            environment.
+            </summary>
+            <param name="stackName">The name of the stack.</param>
+            <param name="environments">List of environments to add to the end of the stack's import list.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:Pulumi.Automation.Workspace.RemoveEnvironmentAsync(System.String,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Removes environments from a stack's import list.
+            </summary>
+            <param name="stackName">The name of the stack.</param>
+            <param name="environment">The name of the environment to remove from the stack's configuration.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
         <member name="M:Pulumi.Automation.Workspace.GetTagAsync(System.String,System.String,System.Threading.CancellationToken)">
             <summary>
             Returns the value associated with the specified stack name and key,
@@ -1860,6 +1937,22 @@
             <summary>
             Gets and sets the config map used with the last update.
             </summary>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:Pulumi.Automation.WorkspaceStack.AddEnvironmentsAsync(System.Collections.Generic.IEnumerable{System.String},System.Threading.CancellationToken)">
+            <summary>
+            Adds environments to the end of a stack's import list. Imported environments are merged in order
+            per the ESC merge rules. The list of environments behaves as if it were the import list in an anonymous
+            environment.
+            </summary>
+            <param name="environments">List of environments to add to the end of the stack's import list.</param>
+            <param name="cancellationToken">A cancellation token.</param>
+        </member>
+        <member name="M:Pulumi.Automation.WorkspaceStack.RemoveEnvironmentAsync(System.String,System.Threading.CancellationToken)">
+            <summary>
+            Removes environments from a stack's import list.
+            </summary>
+            <param name="environment">The name of the environment to remove from the stack's configuration.</param>
             <param name="cancellationToken">A cancellation token.</param>
         </member>
         <member name="M:Pulumi.Automation.WorkspaceStack.UpAsync(Pulumi.Automation.UpOptions,System.Threading.CancellationToken)">

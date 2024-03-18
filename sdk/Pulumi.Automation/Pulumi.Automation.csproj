@@ -1,11 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net6.0</TargetFrameworks>
+    <TargetFrameworks>net6.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Pulumi</Authors>
     <Company>Pulumi Corp.</Company>
-    <Description>Pulumi Automation API, the programmatic interface for driving Pulumi programs without the CLI.</Description>
+    <Description>Pulumi Automation API, the programmatic interface for driving Pulumi programs
+      without the CLI.</Description>
     <PackageProjectUrl>https://www.pulumi.com</PackageProjectUrl>
     <RepositoryUrl>https://github.com/pulumi/pulumi</RepositoryUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
@@ -19,7 +20,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>
+      $(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
   </PropertyGroup>
@@ -39,7 +41,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="CliWrap" Version="3.3.2" />
-    <PackageReference Include="Grpc.AspNetCore.Server" version="2.37.0" />
     <PackageReference Include="YamlDotNet" Version="11.1.1" />
   </ItemGroup>
 
@@ -57,6 +58,12 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="Pulumi.Automation.PulumiSdkVersionAttribute">
+      <_Parameter1>$(PulumiSdkVersion)</_Parameter1>
+    </AssemblyAttribute>
   </ItemGroup>
 
   <ItemGroup>

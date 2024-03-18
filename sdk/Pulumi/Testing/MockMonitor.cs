@@ -62,7 +62,7 @@ namespace Pulumi.Testing
             return new InvokeResponse { Return = await SerializeAsync(result).ConfigureAwait(false) };
         }
 
-        public async Task<CallResponse> CallAsync(CallRequest request)
+        public async Task<CallResponse> CallAsync(ResourceCallRequest request)
         {
             // For now, we'll route both Invoke and Call through IMocks.CallAsync.
             var args = ToDictionary(request.Args);
@@ -111,7 +111,7 @@ namespace Pulumi.Testing
             return new ReadResourceResponse
             {
                 Urn = urn,
-                Properties = Serializer.CreateStruct(serializedState),
+                Properties = Serializer.CreateStruct(serializedState!),
             };
         }
 
@@ -156,7 +156,7 @@ namespace Pulumi.Testing
             {
                 Id = id ?? request.ImportId,
                 Urn = urn,
-                Object = Serializer.CreateStruct(serializedState),
+                Object = Serializer.CreateStruct(serializedState!),
             };
         }
 
@@ -214,7 +214,7 @@ namespace Pulumi.Testing
         private async Task<Struct> SerializeAsync(object o)
         {
             var dict = await SerializeToDictionary(o).ConfigureAwait(false);
-            return Serializer.CreateStruct(dict);
+            return Serializer.CreateStruct(dict!);
         }
     }
 }

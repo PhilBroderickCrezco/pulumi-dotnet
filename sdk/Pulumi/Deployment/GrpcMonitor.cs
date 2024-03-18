@@ -19,9 +19,6 @@ namespace Pulumi
         private static readonly object _channelsLock = new object();
         public GrpcMonitor(string monitorAddress)
         {
-            // Allow for insecure HTTP/2 transport (only needed for netcoreapp3.x)
-            // https://docs.microsoft.com/en-us/aspnet/core/grpc/troubleshoot?view=aspnetcore-6.0#call-insecure-grpc-services-with-net-core-client
-            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             // maxRpcMessageSize raises the gRPC Max Message size from `4194304` (4mb) to `419430400` (400mb)
             const int maxRpcMessageSize = 400 * 1024 * 1024;
             if (_monitorChannels.TryGetValue(monitorAddress, out var monitorChannel))
@@ -61,7 +58,7 @@ namespace Pulumi
         public async Task<InvokeResponse> InvokeAsync(ResourceInvokeRequest request)
             => await this._client.InvokeAsync(request);
 
-        public async Task<CallResponse> CallAsync(CallRequest request)
+        public async Task<CallResponse> CallAsync(ResourceCallRequest request)
             => await this._client.CallAsync(request);
 
         public async Task<ReadResourceResponse> ReadResourceAsync(Resource resource, ReadResourceRequest request)

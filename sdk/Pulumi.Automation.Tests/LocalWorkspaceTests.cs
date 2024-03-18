@@ -14,7 +14,6 @@ using Microsoft.Extensions.Logging;
 using Pulumi.Automation.Commands.Exceptions;
 using Pulumi.Automation.Events;
 using Pulumi.Automation.Exceptions;
-using Semver;
 using Serilog;
 using Serilog.Extensions.Logging;
 using Xunit;
@@ -143,6 +142,35 @@ namespace Pulumi.Automation.Tests
             await workspace.RemovePluginAsync(plugin, version);
             plugins = await workspace.ListPluginsAsync();
             Assert.DoesNotContain(plugins, p => p.Name == plugin && p.Version == version);
+        }
+
+        [MoolumiFact]
+        public async Task AddAndRemoveEnvironment()
+        {
+            var projectName = "node_env_test";
+            var projectSettings = new ProjectSettings(projectName, ProjectRuntimeName.NodeJS);
+            using var workspace = await LocalWorkspace.CreateAsync(new LocalWorkspaceOptions
+            {
+                ProjectSettings = projectSettings,
+            });
+
+            var program = PulumiFn.Create<ValidStack>();
+            var stackName = FullyQualifiedStackName(_pulumiOrg, projectName, $"int_test{GetTestSuffix()}");
+            await workspace.CreateStackAsync(stackName);
+
+            await Assert.ThrowsAsync<CommandException>(() => workspace.AddEnvironmentsAsync(stackName, new[] { "non-existent-env" }));
+
+            await workspace.AddEnvironmentsAsync(stackName, new[] { "automation-api-test-env", "automation-api-test-env-2" });
+            var config = await workspace.GetAllConfigAsync(stackName);
+
+            Assert.Equal("test_value", config["node_env_test:new_key"].Value);
+            Assert.Equal("business", config["node_env_test:also"].Value);
+
+            await workspace.RemoveEnvironmentAsync(stackName, "automation-api-test-env");
+            config = await workspace.GetAllConfigAsync(stackName);
+            Assert.Equal("business", config["node_env_test:also"].Value);
+            Assert.False(config.ContainsKey("node_env_test:new_key"));
+            await workspace.RemoveStackAsync(stackName);
         }
 
         [Fact]
@@ -1650,36 +1678,6 @@ namespace Pulumi.Automation.Tests
         {
             using var workspace = await LocalWorkspace.CreateAsync();
             Assert.Matches("(\\d+\\.)(\\d+\\.)(\\d+)(-.*)?", workspace.PulumiVersion);
-        }
-
-        [Theory]
-        [InlineData("100.0.0", true, false)]
-        [InlineData("1.0.0", true, false)]
-        [InlineData("2.22.0", false, false)]
-        [InlineData("2.1.0", true, false)]
-        [InlineData("2.21.2", false, false)]
-        [InlineData("2.21.1", false, false)]
-        [InlineData("2.21.0", true, false)]
-        // Note that prerelease < release so this case should error
-        [InlineData("2.21.1-alpha.1234", true, false)]
-        [InlineData("2.20.0", false, true)]
-        [InlineData("2.22.0", false, true)]
-        // Invalid version check
-        [InlineData("invalid", false, true)]
-        [InlineData("invalid", true, false)]
-        public void ValidVersionTheory(string currentVersion, bool errorExpected, bool optOut)
-        {
-            var testMinVersion = new SemVersion(2, 21, 1);
-
-            if (errorExpected)
-            {
-                void ValidatePulumiVersion() => LocalWorkspace.ParseAndValidatePulumiVersion(testMinVersion, currentVersion, optOut);
-                Assert.Throws<InvalidOperationException>(ValidatePulumiVersion);
-            }
-            else
-            {
-                LocalWorkspace.ParseAndValidatePulumiVersion(testMinVersion, currentVersion, optOut);
-            }
         }
 
         [Fact]
